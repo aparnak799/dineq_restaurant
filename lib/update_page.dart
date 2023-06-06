@@ -91,7 +91,12 @@ class UpdatePage extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.symmetric(horizontal: 20),
               children: [
-                // Inventory list items go here
+                _buildInventoryItem('Fried Calamari', 'Regular', 50),
+                _buildInventoryItem('Fried Calamari', 'Large', 40),
+                _buildInventoryItem('Bruschetta', 'Regular', 30),
+                _buildInventoryItem('Spaghetti Carbonara', 'Regular', 30),
+                _buildInventoryItem('Margherita Pizza', 'Regular', 70),
+                _buildInventoryItem('Margherita Pizza', 'Large', 20),
               ],
             ),
           ),
