@@ -1,61 +1,129 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'front_page.dart';
 
-class UpdatePage extends StatelessWidget {
-  Future<void> updateInventory(BuildContext context) async {
-    String apiUrl = 'https://fec0-2601-644-9381-d770-35b1-e3a1-45c2-94be.ngrok-free.app/restaurants/ChIJeQ-ozuLKj4ARMQNfslZXl1c/update-inventory/';
+void main() {
+  runApp(MyApp());
+}
 
-    // Define the inventory data
-    List<Map<String, dynamic>> inventoryData = [
-      {
-        "item_reference_id": "#Fried_Calamari__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "variation_reference_id": "#Fried_Calamari__Regular__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "quantity": 50
-      },
-      {
-        "item_reference_id": "#Fried_Calamari__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "variation_reference_id": "#Fried_Calamari__Large__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "quantity": 40
-      },
-      {
-        "item_reference_id": "#Bruschetta__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "variation_reference_id": "#Bruschetta__Regular__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "quantity": 30
-      },
-      {
-        "item_reference_id": "#Spaghetti_Carbonara__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "variation_reference_id": "#Spaghetti_Carbonara__Regular__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "quantity": 30
-      },
-      {
-        "item_reference_id": "#Margherita_Pizza__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "variation_reference_id": "#Margherita_Pizza__Regular__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "quantity": 70
-      },
-      {
-        "item_reference_id": "#Margherita_Pizza__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "variation_reference_id": "#Margherita_Pizza__Large__ChIJeQ-ozuLKj4ARMQNfslZXl1c",
-        "quantity": 20
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Inventory App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: UpdatePage(),
+    );
+  }
+}
+
+class UpdatePage extends StatefulWidget {
+  @override
+  _UpdatePageState createState() => _UpdatePageState();
+}
+
+class _UpdatePageState extends State<UpdatePage> {
+  List<Map<String, dynamic>> inventoryData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMenuData();
+  }
+
+  Future<void> fetchMenuData() async {
+    String apiUrl =
+        'https://f15d-50-232-161-119.ngrok-free.app/restaurants/ChIJeQ-ozuLKj4ARMQNfslZXl1c/get-menu/';
+
+    try {
+      var response = await http.get(Uri.parse(apiUrl));
+      if (response.statusCode == 200) {
+        var menuData = jsonDecode(response.body) as List<dynamic>;
+        List<Map<String, dynamic>> newInventoryData = [];
+
+        for (var category in menuData) {
+          var items = category['items'] as List<dynamic>;
+          for (var item in items) {
+            var variations = item['variations'] as List<dynamic>;
+            for (var variation in variations) {
+              var itemReferenceId = variation['item_reference_id'] as String;
+              var variationReferenceId = variation['variation_reference_id'] as String;
+
+              var itemName = itemReferenceId.split('__')[0].substring(1).replaceAll('_', ' ');
+              var variationName = variationReferenceId.split('__')[1].replaceAll('_', ' ');
+
+              newInventoryData.add({
+                'item_name': itemName,
+                'variation_name': variationName,
+                'quantity': variation['quantity'],
+              });
+            }
+          }
+        }
+
+        setState(() {
+          inventoryData = newInventoryData;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to fetch menu data. Status code: ${response.statusCode}'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
-    ];
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching menu data'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> updateInventoryData() async {
+    // Prepare the inventory data to be updated
+    List<Map<String, dynamic>> updatedInventoryData = [];
+
+    for (var inventoryItem in inventoryData) {
+      updatedInventoryData.add({
+        'item_reference_id': inventoryItem['item_reference_id'],
+        'variation_reference_id': inventoryItem['variation_reference_id'],
+        'quantity': inventoryItem['quantity'],
+      });
+    }
+
+    // Prepare the request body
+    var requestBody = {
+      'inventory_data': updatedInventoryData,
+    };
+
+    // Make the API call to update the inventory
+    var apiUrl =
+        'https://f15d-50-232-161-119.ngrok-free.app/restaurants/ChIJeQ-ozuLKj4ARMQNfslZXl1c/update-inventory/';
 
     try {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({"inventory_data": inventoryData}),
+        body: jsonEncode(requestBody),
       );
 
       if (response.statusCode == 200) {
+        // Successfully updated the inventory
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Inventory updated successfully'),
+            content: Text('Inventory updated successfully.'),
             backgroundColor: Colors.green,
           ),
         );
       } else {
+        // Failed to update the inventory
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to update inventory. Status code: ${response.statusCode}'),
@@ -77,55 +145,26 @@ class UpdatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Update Inventory'),
+        title: Text('Inventory'),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 20),
-          Text(
-            'Inventory Data',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                _buildInventoryItem('Fried Calamari', 'Regular', 50),
-                _buildInventoryItem('Fried Calamari', 'Large', 40),
-                _buildInventoryItem('Bruschetta', 'Regular', 30),
-                _buildInventoryItem('Spaghetti Carbonara', 'Regular', 30),
-                _buildInventoryItem('Margherita Pizza', 'Regular', 70),
-                _buildInventoryItem('Margherita Pizza', 'Large', 20),
-              ],
-            ),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () => updateInventory(context),
-            child: Text('Update Inventory'),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => FrontPage()),
-              );
-            },
-            child: Text('Restaurant Front'),
-          ),
-          SizedBox(height: 20),
-        ],
+      body: ListView.builder(
+        itemCount: inventoryData.length,
+        itemBuilder: (context, index) {
+          var inventoryItem = inventoryData[index];
+          return ListTile(
+            title: Text('Item: ${inventoryItem['item_name']}'),
+            subtitle: Text('Variation: ${inventoryItem['variation_name']}'),
+            trailing: Text('Quantity: ${inventoryItem['quantity']}'),
+          );
+        },
       ),
-    );
-  }
-
-  Widget _buildInventoryItem(String item, String variation, int quantity) {
-    return ListTile(
-      title: Text(item),
-      subtitle: Text(variation),
-      trailing: Text('Quantity: $quantity'),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          updateInventoryData();
+        },
+        label: Text('Update Inventory'),
+        icon: Icon(Icons.update),
+      ),
     );
   }
 }
