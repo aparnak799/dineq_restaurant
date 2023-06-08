@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
 
   void createMenu(BuildContext context) async {
     String apiUrl =
-        'https://f15d-50-232-161-119.ngrok-free.app/restaurants/ChIJeQ-ozuLKj4ARMQNfslZXl1c/upsert-menu/';
+        'http://50.16.17.103:8000/restaurants/ChIJeQ-ozuLKj4ARMQNfslZXl1c/upsert-menu/';
 
     // Build the request body using the collected menu data
     Map<String, dynamic> requestBody = {

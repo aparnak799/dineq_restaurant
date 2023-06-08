@@ -36,7 +36,7 @@ class _UpdatePageState extends State<UpdatePage> {
 
   Future<void> fetchMenuData() async {
     String apiUrl =
-        'https://f15d-50-232-161-119.ngrok-free.app/restaurants/ChIJeQ-ozuLKj4ARMQNfslZXl1c/get-menu/';
+        'http://50.16.17.103:8000/restaurants/ChIJeQ-ozuLKj4ARMQNfslZXl1c/get-menu/';
 
     try {
       var response = await http.get(Uri.parse(apiUrl));
@@ -105,7 +105,7 @@ class _UpdatePageState extends State<UpdatePage> {
 
     // Make the API call to update the inventory
     var apiUrl =
-        'https://f15d-50-232-161-119.ngrok-free.app/restaurants/ChIJeQ-ozuLKj4ARMQNfslZXl1c/update-inventory/';
+        'http://50.16.17.103:8000/restaurants/ChIJeQ-ozuLKj4ARMQNfslZXl1c/update-inventory/';
 
     try {
       var response = await http.post(
