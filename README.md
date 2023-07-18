@@ -40,12 +40,12 @@ In the future, we have exciting plans to expand the capabilities of DineQ even f
 
 At DineQ, we're dedicated to continuously enhancing the app's functionality, revolutionizing the way we dine and creating a lasting impact on the restaurant industry.    
 
-ACCESS INSTRUCTIONS FOR DINEQ  
+## ACCESS INSTRUCTIONS FOR DINEQ  
 
 App platform: Android
 
   
-User-Side Application  
+#### User-Side Application  
 
 Download and Install:   
 Download the user-side DineQ application by clicking here. Install the application on your device. If any permissions are requested during installation, please allow them for the full functionality of the application.
@@ -62,7 +62,8 @@ Once at the restaurant, you can browse the menu and add items to your cart. Afte
 Proceed to the "View Tab" which displays the invoice containing all ordered items with respective prices and quantities, and the total amount due. Here, you'll also find a unique 6-digit code for making payment. Note this code down for future reference.  
 
   
-Restaurant-Side Application
+#### Restaurant-Side Application  
+
 Download and Install:   
 Download the user-side DineQ application by clicking here. Install the application on your device. If any permissions are requested during installation, please allow them for the full functionality of the application.
 
